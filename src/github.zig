@@ -33,17 +33,14 @@ pub fn getLatestDownloadUri(allocator: std.mem.Allocator) ![]const u8 {
 
 fn convertTagToFile(allocator: std.mem.Allocator, tag: []const u8) ![]const u8 {
     // boxwallet-0.0.5-linux-x64.tar.gz
-    const result = try rjm_strings.replaceString(allocator, tag, "v", "");
-    defer allocator.free(result);
+    const version = try rjm_strings.replaceString(allocator, tag, "v", "");
+    defer allocator.free(version);
 
-    std.debug.print("Trimmed tag: {s}\n", .{result});
+    const prefix = "boxwallet-";
 
-    const str1: []const u8 = "boxwallet-";
-    const str2: []const u8 = "-linux-x64.tar.gz";
-
-    return switch (builtin.os.tag) {
+    const suffix = switch (builtin.os.tag) {
         .linux => switch (builtin.cpu.arch) {
-            .x86_64 => "Linux 64-bit (x86)",
+            .x86_64 => "linux-x64.tar.gz",
             .aarch64 => "Linux 64-bit (ARM)",
             else => "Linux (Other Arch)",
         },
@@ -58,6 +55,14 @@ fn convertTagToFile(allocator: std.mem.Allocator, tag: []const u8) ![]const u8 {
         },
         else => "Unsupported Operating System",
     };
+
+    // Construct the final string: boxwallet-0.0.5-linux-x64.tar.gz
+    // Note: I removed the "/" from your fmt string to match your comment's format
+    return try std.fmt.allocPrint(allocator, "{s}{s}-{s}", .{
+        prefix,
+        version,
+        suffix,
+    });
 }
 
 pub fn getLatestReleaseTag(allocator: std.mem.Allocator) ![]const u8 {
