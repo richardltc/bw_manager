@@ -20,6 +20,7 @@ pub fn getLatestDownloadUri(allocator: std.mem.Allocator) ![]const u8 {
     defer allocator.free(latest_tag);
 
     const filename = try convertTagToFile(allocator, latest_tag);
+    defer allocator.free(filename);
 
     // Use allocPrint to concatenate the parts into a new string
     const full_url = try std.fmt.allocPrint(allocator, "{s}{s}/{s}", .{
