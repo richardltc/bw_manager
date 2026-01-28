@@ -13,24 +13,24 @@ type GitHubRelease struct {
 	TagName string `json:"tag_name"`
 }
 
-func GetLatestDownloadUri() (string, error) {
+func GetLatestDownloadUri() (tag string, url string, err error) {
 	// https://github.com/richardltc/boxwallet2/releases/download/v0.0.5/boxwallet-0.0.5-linux-x64.tar.gz
 	base_url := "https://github.com/richardltc/boxwallet2/releases/download/"
 
 	latest_tag, err := getLatestReleaseTag()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	filename, err := convertTagToFile(latest_tag)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// Use allocPrint to concatenate the parts into a new string
 	full_url := base_url + latest_tag + "/" + filename
 
-	return full_url, nil
+	return full_url, latest_tag, nil
 }
 
 func getLatestReleaseTag() (string, error) {
