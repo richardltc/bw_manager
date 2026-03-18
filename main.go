@@ -92,9 +92,16 @@ func createScripts(subDir string) {
 }
 
 func main() {
-	const green = "\x1b[32m"
-	const boldGreen = "\x1b[1;32m"
-	const reset = "\x1b[0m"
+	green := "\x1b[32m"
+	boldGreen := "\x1b[1;32m"
+	reset := "\x1b[0m"
+	// On Windows, only use colours if running inside a colour-capable terminal
+	// (e.g. Windows Terminal sets WT_SESSION; respect NO_COLOR on any platform)
+	if os.Getenv("NO_COLOR") != "" || (runtime.GOOS == "windows" && os.Getenv("WT_SESSION") == "") {
+		green = ""
+		boldGreen = ""
+		reset = ""
+	}
 
 	// Mocking an app struct for context
 	app := struct {
@@ -102,7 +109,7 @@ func main() {
 		version string
 	}{
 		name:    "BoxWallet Manager",
-		version: "0.0.3",
+		version: "0.0.4",
 	}
 
 	// Immediate log
